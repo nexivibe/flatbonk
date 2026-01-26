@@ -1,6 +1,5 @@
 package ape.flatbonk.input;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -59,49 +58,63 @@ public class DashButton {
         float cooldownProgress = cooldownTimer / Constants.DASH_COOLDOWN;
         boolean onCooldown = cooldownTimer > 0;
 
+        // Outer glow
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        if (!onCooldown) {
+            shapeRenderer.setColor(1f, 1f, 0f, 0.2f); // Yellow glow when ready
+            shapeRenderer.circle(centerX, centerY, radius + 5, 32);
+        }
+        shapeRenderer.end();
+
         // Background circle
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (onCooldown) {
-            shapeRenderer.setColor(0.2f, 0.2f, 0.3f, 0.8f);
+            shapeRenderer.setColor(0.1f, 0.1f, 0.15f, 0.8f);
         } else if (pressed) {
-            shapeRenderer.setColor(0.6f, 0.8f, 1f, 0.9f);
+            shapeRenderer.setColor(1f, 1f, 0f, 0.9f); // Bright yellow when pressed
         } else {
-            shapeRenderer.setColor(0.3f, 0.5f, 0.7f, 0.8f);
+            shapeRenderer.setColor(0.3f, 0.3f, 0f, 0.6f); // Dim yellow
         }
         shapeRenderer.circle(centerX, centerY, radius, 32);
         shapeRenderer.end();
 
-        // Cooldown arc
+        // Cooldown arc (neon cyan)
         if (onCooldown) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(0.1f, 0.3f, 0.5f, 0.9f);
+            shapeRenderer.setColor(0f, 1f, 1f, 0.7f);
             float arcDegrees = 360f * (1f - cooldownProgress);
             drawArc(shapeRenderer, centerX, centerY, radius - 5, 90, arcDegrees);
             shapeRenderer.end();
         }
 
-        // Border
+        // Neon border
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         if (onCooldown) {
             shapeRenderer.setColor(0.4f, 0.4f, 0.5f, 1f);
         } else {
-            shapeRenderer.setColor(Color.CYAN);
+            shapeRenderer.setColor(1f, 1f, 0f, 1f); // Yellow neon
         }
         drawCircleOutline(shapeRenderer, centerX, centerY, radius, 32);
         shapeRenderer.end();
 
-        // Dash icon (arrow)
+        // Dash icon (lightning bolt style arrow)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (onCooldown) {
             shapeRenderer.setColor(0.4f, 0.4f, 0.5f, 1f);
         } else {
-            shapeRenderer.setColor(Color.WHITE);
+            shapeRenderer.setColor(1f, 1f, 1f, 1f);
         }
         float arrowSize = radius * 0.5f;
+        // Draw lightning bolt shape
         shapeRenderer.triangle(
-            centerX, centerY + arrowSize,
-            centerX - arrowSize * 0.6f, centerY - arrowSize * 0.3f,
-            centerX + arrowSize * 0.6f, centerY - arrowSize * 0.3f
+            centerX - arrowSize * 0.3f, centerY + arrowSize,
+            centerX + arrowSize * 0.5f, centerY + arrowSize * 0.2f,
+            centerX - arrowSize * 0.1f, centerY
+        );
+        shapeRenderer.triangle(
+            centerX + arrowSize * 0.3f, centerY - arrowSize,
+            centerX - arrowSize * 0.5f, centerY - arrowSize * 0.2f,
+            centerX + arrowSize * 0.1f, centerY
         );
         shapeRenderer.end();
     }

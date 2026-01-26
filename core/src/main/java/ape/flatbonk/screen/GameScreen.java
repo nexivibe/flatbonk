@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import ape.flatbonk.Main;
+import ape.flatbonk.entity.Entity;
 import ape.flatbonk.entity.EntityManager;
 import ape.flatbonk.entity.component.RenderComponent;
 import ape.flatbonk.entity.component.TransformComponent;
 import ape.flatbonk.entity.factory.PlayerFactory;
 import ape.flatbonk.input.ControlBar;
+import ape.flatbonk.render.RetroBackground;
 import ape.flatbonk.render.ShapeDefinition;
 import ape.flatbonk.state.GameState;
 import ape.flatbonk.state.PlayerConfig;
@@ -30,6 +32,7 @@ public class GameScreen extends AbstractGameScreen {
     private final ControlBar controlBar;
     private final GameHUD hud;
     private final LevelUpDialog levelUpDialog;
+    private final RetroBackground background;
 
     private final List<GameSystem> systems;
     private boolean paused;
@@ -44,6 +47,7 @@ public class GameScreen extends AbstractGameScreen {
         this.controlBar = new ControlBar(stage, viewport);
         this.hud = new GameHUD(gameState);
         this.levelUpDialog = new LevelUpDialog(stage, gameState, this::onPowerupSelected);
+        this.background = new RetroBackground();
 
         this.systems = new ArrayList<GameSystem>();
         this.paused = false;
@@ -90,7 +94,8 @@ public class GameScreen extends AbstractGameScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.05f, 0.05f, 0.08f, 1f);
+        // Dark retro background
+        Gdx.gl.glClearColor(0.02f, 0.02f, 0.04f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (!paused) {
@@ -100,12 +105,22 @@ public class GameScreen extends AbstractGameScreen {
             }
         }
 
-        // Draw game area boundary
+        // Update and render scrolling background
+        Entity player = entityManager.getPlayerEntity();
+        if (player != null) {
+            TransformComponent playerTransform = player.getTransformComponent();
+            if (playerTransform != null) {
+                background.update(playerTransform.getX(), playerTransform.getY(), delta);
+            }
+        }
+        background.render(batch, viewport);
+
+        // Draw neon game area boundary
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(0.2f, 0.3f, 0.4f, 1f);
-        shapeRenderer.rect(0, Constants.CONTROL_BAR_HEIGHT,
-            Constants.WORLD_WIDTH, Constants.GAME_AREA_HEIGHT);
+        shapeRenderer.setColor(0f, 1f, 1f, 0.3f); // Cyan neon glow
+        shapeRenderer.rect(2, Constants.CONTROL_BAR_HEIGHT + 2,
+            Constants.WORLD_WIDTH - 4, Constants.GAME_AREA_HEIGHT - 4);
         shapeRenderer.end();
 
         // Render entities
@@ -144,10 +159,17 @@ public class GameScreen extends AbstractGameScreen {
                         transform.getScale() * render.getSize(),
                         render.getColor());
                 } else {
-                    // Draw as circle for pickups/bullets
-                    shapeRenderer.setColor(render.getColor());
-                    shapeRenderer.circle(transform.getX(), transform.getY(),
-                        render.getSize() * transform.getScale());
+                    // Draw as circle for pickups/bullets with glow effect
+                    Color color = render.getColor();
+                    float size = render.getSize() * transform.getScale();
+
+                    // Outer glow
+                    shapeRenderer.setColor(color.r, color.g, color.b, 0.3f);
+                    shapeRenderer.circle(transform.getX(), transform.getY(), size * 1.5f);
+
+                    // Core
+                    shapeRenderer.setColor(color);
+                    shapeRenderer.circle(transform.getX(), transform.getY(), size);
                 }
             }
         });
@@ -159,5 +181,6 @@ public class GameScreen extends AbstractGameScreen {
     public void dispose() {
         super.dispose();
         entityManager.dispose();
+        background.dispose();
     }
 }

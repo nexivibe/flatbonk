@@ -1,6 +1,5 @@
 package ape.flatbonk.input;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -97,30 +96,49 @@ public class VirtualJoystick {
     public void render(ShapeRenderer shapeRenderer, Viewport viewport) {
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
-        // Outer ring
+        // Outer glow ring (retro 80s style)
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(0.3f, 0.4f, 0.5f, 1f);
-        for (int i = 0; i < 32; i++) {
-            float angle1 = (float) (i * 2 * Math.PI / 32);
-            float angle2 = (float) ((i + 1) * 2 * Math.PI / 32);
-            shapeRenderer.line(
-                centerX + outerRadius * (float) Math.cos(angle1),
-                centerY + outerRadius * (float) Math.sin(angle1),
-                centerX + outerRadius * (float) Math.cos(angle2),
-                centerY + outerRadius * (float) Math.sin(angle2)
-            );
-        }
+        shapeRenderer.setColor(1f, 0f, 1f, 0.3f); // Magenta glow
+        drawCircleOutline(shapeRenderer, centerX, centerY, outerRadius + 3, 32);
+        shapeRenderer.setColor(0f, 1f, 1f, 0.5f); // Cyan outline
+        drawCircleOutline(shapeRenderer, centerX, centerY, outerRadius, 32);
         shapeRenderer.end();
 
-        // Inner knob
+        // Inner knob with neon effect
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (active) {
-            shapeRenderer.setColor(0.4f, 0.6f, 0.8f, 0.9f);
+            // Glow when active
+            shapeRenderer.setColor(0f, 1f, 1f, 0.3f);
+            shapeRenderer.circle(knobX, knobY, innerRadius * 1.4f, 24);
+            shapeRenderer.setColor(0f, 1f, 1f, 0.9f); // Bright cyan
         } else {
-            shapeRenderer.setColor(0.3f, 0.4f, 0.5f, 0.7f);
+            shapeRenderer.setColor(1f, 0f, 1f, 0.4f); // Dim magenta
         }
         shapeRenderer.circle(knobX, knobY, innerRadius, 24);
         shapeRenderer.end();
+
+        // Knob highlight
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        if (active) {
+            shapeRenderer.setColor(1f, 1f, 1f, 0.8f);
+        } else {
+            shapeRenderer.setColor(1f, 0f, 1f, 0.6f);
+        }
+        drawCircleOutline(shapeRenderer, knobX, knobY, innerRadius, 24);
+        shapeRenderer.end();
+    }
+
+    private void drawCircleOutline(ShapeRenderer renderer, float x, float y, float radius, int segments) {
+        for (int i = 0; i < segments; i++) {
+            float angle1 = (float) (i * 2 * Math.PI / segments);
+            float angle2 = (float) ((i + 1) * 2 * Math.PI / segments);
+            renderer.line(
+                x + radius * (float) Math.cos(angle1),
+                y + radius * (float) Math.sin(angle1),
+                x + radius * (float) Math.cos(angle2),
+                y + radius * (float) Math.sin(angle2)
+            );
+        }
     }
 
     public Vector2 getDirection() {

@@ -41,9 +41,9 @@ public class BulletFactory {
         render.setSize(size);
         bullet.addComponent("render", render);
 
-        // Collision
+        // Collision - use larger radius for better hit detection
         CollisionComponent collision = new CollisionComponent(
-            size / 2,
+            Math.max(size, 8f),
             CollisionComponent.MASK_PLAYER_BULLET,
             CollisionComponent.MASK_MONSTER
         );

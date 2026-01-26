@@ -1,0 +1,7 @@
+{
+  "title": "Flatbonk",
+  "category": "game",
+  "description": "A mobile bullet-hell survivor game with geometric visuals. Choose from 15 unique shapes, each with distinct weapons, and battle endless waves of enemies while collecting powerups and navigating color-based environmental hazards.",
+  "github": "https://github.com/nexivibe/flatbonk",
+  "tech": ["libGDX", "Java", "Gradle"]
+}

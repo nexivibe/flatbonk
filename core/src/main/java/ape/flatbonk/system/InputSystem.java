@@ -42,12 +42,12 @@ public class InputSystem implements GameSystem {
 
         if (velocity == null) return;
 
+        // Get direction from control bar (supports both joystick and keyboard)
+        Vector2 dir = controlBar.getDirection();
+
         // Handle dash
         DashButton dashButton = controlBar.getDashButton();
         if (dashButton.isPressed() && !dashButton.isOnCooldown() && !isDashing) {
-            VirtualJoystick joystick = controlBar.getJoystick();
-            Vector2 dir = joystick.getDirection();
-
             if (dir.len() > 0.1f) {
                 isDashing = true;
                 dashTimer = Constants.DASH_DURATION;
@@ -75,9 +75,6 @@ public class InputSystem implements GameSystem {
                 isDashing = false;
             }
         } else {
-            VirtualJoystick joystick = controlBar.getJoystick();
-            Vector2 dir = joystick.getDirection();
-
             float speedMod = stats != null ? stats.getSpeedModifier() : 1f;
             float speed = Constants.PLAYER_BASE_SPEED * speedMod;
 
