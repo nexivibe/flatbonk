@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(git -C /mnt/c/Users/jeff/github/nexivibe/flatbonk log --oneline -10)",
+      "Bash(xargs:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew:*)"
     ]
   }
 }
