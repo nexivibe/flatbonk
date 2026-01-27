@@ -11,6 +11,8 @@ public class GameState {
     private int currentXP;
     private int money;
     private int killCount;
+    private int score;
+    private int totalDamageDealt;
     private float elapsedTime;
     private boolean gameOver;
 
@@ -29,6 +31,8 @@ public class GameState {
         this.currentXP = 0;
         this.money = 0;
         this.killCount = 0;
+        this.score = 0;
+        this.totalDamageDealt = 0;
         this.elapsedTime = 0;
         this.gameOver = false;
 
@@ -48,7 +52,8 @@ public class GameState {
         healthMultiplier = 1f + intervals * Constants.HEALTH_SCALE_PER_INTERVAL;
         damageMultiplier = 1f + intervals * Constants.DAMAGE_SCALE_PER_INTERVAL;
 
-        float spawnReduction = intervals * 0.25f;
+        // Faster spawn rate reduction for more action
+        float spawnReduction = intervals * 0.12f;
         spawnInterval = Math.max(Constants.MIN_SPAWN_INTERVAL,
             Constants.INITIAL_SPAWN_INTERVAL - spawnReduction);
     }
@@ -72,6 +77,12 @@ public class GameState {
 
     public void addKill() {
         killCount++;
+        score += 100; // Bonus for killing
+    }
+
+    public void addDamageDealt(int damage) {
+        totalDamageDealt += damage;
+        score += damage;
     }
 
     public void setGameOver(boolean gameOver) {
@@ -105,6 +116,14 @@ public class GameState {
 
     public int getKillCount() {
         return killCount;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getTotalDamageDealt() {
+        return totalDamageDealt;
     }
 
     public float getElapsedTime() {

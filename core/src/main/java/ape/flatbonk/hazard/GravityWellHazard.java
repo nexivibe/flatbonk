@@ -24,15 +24,25 @@ public class GravityWellHazard extends Hazard {
         Entity gravityWell = entityManager.createEntity();
         gravityWell.setTag("hazard_gravity");
 
-        float x = MathUtils.random(100f, Constants.WORLD_WIDTH - 100f);
-        float y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT + 100f, Constants.WORLD_HEIGHT - 100f);
+        // Spawn near player
+        Entity player = entityManager.getPlayerEntity();
+        float playerX = Constants.WORLD_WIDTH / 2;
+        float playerY = Constants.WORLD_HEIGHT / 2;
+        if (player != null && player.getTransformComponent() != null) {
+            playerX = player.getTransformComponent().getX();
+            playerY = player.getTransformComponent().getY();
+        }
+        float x = playerX + MathUtils.random(-250f, 250f);
+        float y = playerY + MathUtils.random(-250f, 250f);
+        x = MathUtils.clamp(x, 100f, Constants.WORLD_WIDTH - 100f);
+        y = MathUtils.clamp(y, Constants.CONTROL_BAR_HEIGHT + 100f, Constants.WORLD_HEIGHT - 100f);
 
         TransformComponent transform = new TransformComponent(x, y);
         gravityWell.addComponent("transform", transform);
 
         RenderComponent render = new RenderComponent();
-        render.setColor(new Color(0.6f, 0.2f, 0.8f, 0.7f));
-        render.setSize(40f);
+        render.setColor(new Color(0.6f, 0.2f, 0.8f, 0.6f));
+        render.setSize(Constants.HAZARD_SIZE);
         gravityWell.addComponent("render", render);
 
         CollisionComponent collision = new CollisionComponent(
@@ -42,7 +52,7 @@ public class GravityWellHazard extends Hazard {
         );
         gravityWell.addComponent("collision", collision);
 
-        LifetimeComponent lifetime = new LifetimeComponent(7f);
+        LifetimeComponent lifetime = new LifetimeComponent(Constants.HAZARD_LIFETIME);
         gravityWell.addComponent("lifetime", lifetime);
     }
 

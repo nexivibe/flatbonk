@@ -38,7 +38,7 @@ public class GameOverScreen extends AbstractGameScreen {
         TextButton retryButton = new TextButton("RETRY", style);
         retryButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         retryButton.setPosition(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             120
         );
         retryButton.addListener(new ClickListener() {
@@ -51,7 +51,7 @@ public class GameOverScreen extends AbstractGameScreen {
         TextButton menuButton = new TextButton("MAIN MENU", style);
         menuButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         menuButton.setPosition(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             50
         );
         menuButton.addListener(new ClickListener() {
@@ -75,13 +75,13 @@ public class GameOverScreen extends AbstractGameScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.2f, 0.3f, 0.5f, 1f);
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             120,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             50,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
@@ -92,13 +92,13 @@ public class GameOverScreen extends AbstractGameScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.CYAN);
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             120,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             50,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
@@ -112,15 +112,15 @@ public class GameOverScreen extends AbstractGameScreen {
         font.getData().setScale(3f);
         font.setColor(Color.RED);
         font.draw(batch, "GAME OVER",
-            (Constants.WORLD_WIDTH - titleLayout.width) / 2,
-            Constants.WORLD_HEIGHT - 60);
+            (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT - 60);
 
         // Stats
         font.getData().setScale(1.5f);
         font.setColor(Color.WHITE);
 
-        float statsY = Constants.WORLD_HEIGHT - 150;
-        float statsX = Constants.WORLD_WIDTH / 2 - 100;
+        float statsY = Constants.VIEWPORT_HEIGHT - 150;
+        float statsX = Constants.VIEWPORT_WIDTH / 2 - 100;
 
         font.draw(batch, "Level: " + finalState.getPlayerLevel(), statsX, statsY);
         font.draw(batch, "Kills: " + finalState.getKillCount(), statsX, statsY - 35);

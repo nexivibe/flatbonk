@@ -39,4 +39,9 @@ public class HomingMissileWeapon extends Weapon {
     public String getName() {
         return "Homing Missiles";
     }
+
+    @Override
+    public String getDescription() {
+        return "Missiles that track enemies";
+    }
 }

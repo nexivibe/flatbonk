@@ -68,4 +68,12 @@ public class VelocityComponent {
     public float getSpeed() {
         return (float) Math.sqrt(vx * vx + vy * vy);
     }
+
+    /**
+     * Apply a knockback impulse. The impulse decays over time via friction.
+     */
+    public void addKnockback(float dirX, float dirY, float force) {
+        vx += dirX * force;
+        vy += dirY * force;
+    }
 }

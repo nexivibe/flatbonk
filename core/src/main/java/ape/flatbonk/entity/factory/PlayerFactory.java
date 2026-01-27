@@ -13,10 +13,10 @@ public class PlayerFactory {
         Entity player = entityManager.createEntity();
         player.setTag("player");
 
-        // Transform - start in center of game area
+        // Transform - start in center of world
         TransformComponent transform = new TransformComponent(
             Constants.WORLD_WIDTH / 2,
-            Constants.CONTROL_BAR_HEIGHT + Constants.GAME_AREA_HEIGHT / 2
+            Constants.WORLD_HEIGHT / 2
         );
         player.addComponent("transform", transform);
 

@@ -25,25 +25,35 @@ public class PoisonPoolHazard extends Hazard {
         Entity poisonPool = entityManager.createEntity();
         poisonPool.setTag("hazard_poison");
 
-        float x = MathUtils.random(50f, Constants.WORLD_WIDTH - 50f);
-        float y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT + 50f, Constants.WORLD_HEIGHT - 50f);
+        // Spawn near player
+        Entity player = entityManager.getPlayerEntity();
+        float playerX = Constants.WORLD_WIDTH / 2;
+        float playerY = Constants.WORLD_HEIGHT / 2;
+        if (player != null && player.getTransformComponent() != null) {
+            playerX = player.getTransformComponent().getX();
+            playerY = player.getTransformComponent().getY();
+        }
+        float x = playerX + MathUtils.random(-200f, 200f);
+        float y = playerY + MathUtils.random(-200f, 200f);
+        x = MathUtils.clamp(x, 50f, Constants.WORLD_WIDTH - 50f);
+        y = MathUtils.clamp(y, Constants.CONTROL_BAR_HEIGHT + 50f, Constants.WORLD_HEIGHT - 50f);
 
         TransformComponent transform = new TransformComponent(x, y);
         poisonPool.addComponent("transform", transform);
 
         RenderComponent render = new RenderComponent();
-        render.setColor(new Color(0.2f, 0.8f, 0.2f, 0.6f));
-        render.setSize(70f);
+        render.setColor(new Color(0.2f, 0.8f, 0.2f, 0.5f));
+        render.setSize(Constants.HAZARD_SIZE);
         poisonPool.addComponent("render", render);
 
         CollisionComponent collision = new CollisionComponent(
-            55f,
+            Constants.HAZARD_SIZE * 0.8f,
             CollisionComponent.MASK_HAZARD,
             CollisionComponent.MASK_PLAYER
         );
         poisonPool.addComponent("collision", collision);
 
-        LifetimeComponent lifetime = new LifetimeComponent(10f);
+        LifetimeComponent lifetime = new LifetimeComponent(Constants.HAZARD_LIFETIME);
         poisonPool.addComponent("lifetime", lifetime);
     }
 

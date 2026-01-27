@@ -22,25 +22,35 @@ public class IcePatchHazard extends Hazard {
         Entity icePatch = entityManager.createEntity();
         icePatch.setTag("hazard_ice");
 
-        float x = MathUtils.random(50f, Constants.WORLD_WIDTH - 50f);
-        float y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT + 50f, Constants.WORLD_HEIGHT - 50f);
+        // Spawn near player
+        Entity player = entityManager.getPlayerEntity();
+        float playerX = Constants.WORLD_WIDTH / 2;
+        float playerY = Constants.WORLD_HEIGHT / 2;
+        if (player != null && player.getTransformComponent() != null) {
+            playerX = player.getTransformComponent().getX();
+            playerY = player.getTransformComponent().getY();
+        }
+        float x = playerX + MathUtils.random(-200f, 200f);
+        float y = playerY + MathUtils.random(-200f, 200f);
+        x = MathUtils.clamp(x, 50f, Constants.WORLD_WIDTH - 50f);
+        y = MathUtils.clamp(y, Constants.CONTROL_BAR_HEIGHT + 50f, Constants.WORLD_HEIGHT - 50f);
 
         TransformComponent transform = new TransformComponent(x, y);
         icePatch.addComponent("transform", transform);
 
         RenderComponent render = new RenderComponent();
-        render.setColor(new Color(0.6f, 0.8f, 1f, 0.5f));
-        render.setSize(60f);
+        render.setColor(new Color(0.6f, 0.8f, 1f, 0.4f));
+        render.setSize(Constants.HAZARD_SIZE);
         icePatch.addComponent("render", render);
 
         CollisionComponent collision = new CollisionComponent(
-            50f,
+            Constants.HAZARD_SIZE * 0.8f,
             CollisionComponent.MASK_HAZARD,
             CollisionComponent.MASK_PLAYER
         );
         icePatch.addComponent("collision", collision);
 
-        LifetimeComponent lifetime = new LifetimeComponent(8f);
+        LifetimeComponent lifetime = new LifetimeComponent(Constants.HAZARD_LIFETIME);
         icePatch.addComponent("lifetime", lifetime);
     }
 

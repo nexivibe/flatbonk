@@ -22,36 +22,28 @@ public class FireballHazard extends Hazard {
         Entity fireball = entityManager.createEntity();
         fireball.setTag("hazard_fireball");
 
-        // Spawn from random edge
-        float x, y, vx, vy;
-        int edge = MathUtils.random(3);
-
-        switch (edge) {
-            case 0: // Top
-                x = MathUtils.random(Constants.WORLD_WIDTH);
-                y = Constants.WORLD_HEIGHT;
-                vx = MathUtils.random(-100f, 100f);
-                vy = -MathUtils.random(150f, 300f);
-                break;
-            case 1: // Right
-                x = Constants.WORLD_WIDTH;
-                y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT, Constants.WORLD_HEIGHT);
-                vx = -MathUtils.random(150f, 300f);
-                vy = MathUtils.random(-100f, 100f);
-                break;
-            case 2: // Bottom
-                x = MathUtils.random(Constants.WORLD_WIDTH);
-                y = Constants.CONTROL_BAR_HEIGHT;
-                vx = MathUtils.random(-100f, 100f);
-                vy = MathUtils.random(150f, 300f);
-                break;
-            default: // Left
-                x = 0;
-                y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT, Constants.WORLD_HEIGHT);
-                vx = MathUtils.random(150f, 300f);
-                vy = MathUtils.random(-100f, 100f);
-                break;
+        // Get player position
+        Entity player = entityManager.getPlayerEntity();
+        float playerX = Constants.WORLD_WIDTH / 2;
+        float playerY = Constants.WORLD_HEIGHT / 2;
+        if (player != null && player.getTransformComponent() != null) {
+            playerX = player.getTransformComponent().getX();
+            playerY = player.getTransformComponent().getY();
         }
+
+        // Spawn from random angle around player at spawn distance
+        float angle = MathUtils.random(360f);
+        float spawnDist = Constants.SPAWN_DISTANCE;
+        float x = playerX + MathUtils.cosDeg(angle) * spawnDist;
+        float y = playerY + MathUtils.sinDeg(angle) * spawnDist;
+
+        // Velocity toward player with some randomness
+        float toPlayerX = playerX - x;
+        float toPlayerY = playerY - y;
+        float len = (float) Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
+        float speed = MathUtils.random(150f, 250f);
+        float vx = (toPlayerX / len) * speed + MathUtils.random(-50f, 50f);
+        float vy = (toPlayerY / len) * speed + MathUtils.random(-50f, 50f);
 
         TransformComponent transform = new TransformComponent(x, y);
         fireball.addComponent("transform", transform);
@@ -61,18 +53,18 @@ public class FireballHazard extends Hazard {
         fireball.addComponent("velocity", velocity);
 
         RenderComponent render = new RenderComponent();
-        render.setColor(new Color(1f, 0.4f, 0.1f, 1f));
-        render.setSize(15f);
+        render.setColor(new Color(1f, 0.4f, 0.1f, 0.8f));
+        render.setSize(Constants.HAZARD_SIZE * 0.5f);
         fireball.addComponent("render", render);
 
         CollisionComponent collision = new CollisionComponent(
-            12f,
+            Constants.HAZARD_SIZE * 0.4f,
             CollisionComponent.MASK_HAZARD,
             CollisionComponent.MASK_PLAYER
         );
         fireball.addComponent("collision", collision);
 
-        LifetimeComponent lifetime = new LifetimeComponent(5f);
+        LifetimeComponent lifetime = new LifetimeComponent(Constants.HAZARD_LIFETIME);
         fireball.addComponent("lifetime", lifetime);
     }
 

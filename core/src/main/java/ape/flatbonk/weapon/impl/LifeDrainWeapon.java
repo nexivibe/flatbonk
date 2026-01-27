@@ -36,4 +36,9 @@ public class LifeDrainWeapon extends Weapon {
     public String getName() {
         return "Life Drain";
     }
+
+    @Override
+    public String getDescription() {
+        return "Heals you when hitting enemies";
+    }
 }

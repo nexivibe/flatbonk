@@ -42,8 +42,8 @@ public class ColorSelectionScreen extends AbstractGameScreen {
 
     private void initColorBounds() {
         float totalWidth = colors.length * BUTTON_SIZE + (colors.length - 1) * BUTTON_SPACING;
-        float startX = (Constants.WORLD_WIDTH - totalWidth) / 2;
-        float y = Constants.WORLD_HEIGHT / 2 - BUTTON_SIZE / 2;
+        float startX = (Constants.VIEWPORT_WIDTH - totalWidth) / 2;
+        float y = Constants.VIEWPORT_HEIGHT / 2 - BUTTON_SIZE / 2;
 
         for (int i = 0; i < colors.length; i++) {
             float x = startX + i * (BUTTON_SIZE + BUTTON_SPACING);
@@ -104,8 +104,8 @@ public class ColorSelectionScreen extends AbstractGameScreen {
         font.getData().setScale(2f);
         font.setColor(Color.CYAN);
         font.draw(batch, "SELECT YOUR COLOR",
-            (Constants.WORLD_WIDTH - titleLayout.width) / 2,
-            Constants.WORLD_HEIGHT - 60);
+            (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT - 60);
 
         // Color names
         font.getData().setScale(1f);
@@ -126,7 +126,7 @@ public class ColorSelectionScreen extends AbstractGameScreen {
             String info = "Hazard: " + hovered.getHazardName();
             hazardLayout.setText(font, info);
             font.draw(batch, info,
-                (Constants.WORLD_WIDTH - hazardLayout.width) / 2,
+                (Constants.VIEWPORT_WIDTH - hazardLayout.width) / 2,
                 100);
         }
 

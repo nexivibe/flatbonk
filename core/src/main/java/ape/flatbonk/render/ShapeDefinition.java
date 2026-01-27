@@ -9,6 +9,10 @@ import ape.flatbonk.util.ShapeType;
 public class ShapeDefinition {
 
     public static void drawShape(ShapeRenderer renderer, ShapeType type, float x, float y, float size, Color color) {
+        drawShape(renderer, type, x, y, size, color, 0);
+    }
+
+    public static void drawShape(ShapeRenderer renderer, ShapeType type, float x, float y, float size, Color color, float rotation) {
         renderer.setColor(color);
         float halfSize = size / 2;
 
@@ -17,46 +21,46 @@ public class ShapeDefinition {
                 renderer.circle(x, y, halfSize, 32);
                 break;
             case TRIANGLE:
-                drawPolygon(renderer, x, y, halfSize, 3, -90);
+                drawPolygon(renderer, x, y, halfSize, 3, rotation - 90);
                 break;
             case SQUARE:
-                renderer.rect(x - halfSize, y - halfSize, size, size);
+                drawPolygon(renderer, x, y, halfSize * 1.2f, 4, rotation + 45);
                 break;
             case PENTAGON:
-                drawPolygon(renderer, x, y, halfSize, 5, -90);
+                drawPolygon(renderer, x, y, halfSize, 5, rotation - 90);
                 break;
             case HEXAGON:
-                drawPolygon(renderer, x, y, halfSize, 6, 0);
+                drawPolygon(renderer, x, y, halfSize, 6, rotation);
                 break;
             case STAR:
-                drawStar(renderer, x, y, halfSize, 5);
+                drawStar(renderer, x, y, halfSize, 5, rotation);
                 break;
             case DIAMOND:
-                drawDiamond(renderer, x, y, halfSize);
+                drawDiamond(renderer, x, y, halfSize, rotation);
                 break;
             case OVAL:
-                renderer.ellipse(x - halfSize, y - halfSize * 0.6f, size, size * 0.6f, 32);
+                drawRotatedEllipse(renderer, x, y, halfSize, halfSize * 0.6f, rotation);
                 break;
             case RECTANGLE:
-                renderer.rect(x - halfSize, y - halfSize * 0.5f, size, size * 0.5f);
+                drawRotatedRect(renderer, x, y, halfSize, halfSize * 0.5f, rotation);
                 break;
             case CROSS:
-                drawCross(renderer, x, y, halfSize);
+                drawCross(renderer, x, y, halfSize, rotation);
                 break;
             case ARROW:
-                drawArrow(renderer, x, y, halfSize);
+                drawArrow(renderer, x, y, halfSize, rotation);
                 break;
             case HEART:
-                drawHeart(renderer, x, y, halfSize);
+                drawHeart(renderer, x, y, halfSize, rotation);
                 break;
             case CRESCENT:
-                drawCrescent(renderer, x, y, halfSize, color);
+                drawCrescent(renderer, x, y, halfSize, color, rotation);
                 break;
             case SEMICIRCLE:
-                drawSemicircle(renderer, x, y, halfSize);
+                drawSemicircle(renderer, x, y, halfSize, rotation);
                 break;
             case OCTAGON:
-                drawPolygon(renderer, x, y, halfSize, 8, 22.5f);
+                drawPolygon(renderer, x, y, halfSize, 8, rotation + 22.5f);
                 break;
         }
     }
@@ -78,13 +82,13 @@ public class ShapeDefinition {
         }
     }
 
-    private static void drawStar(ShapeRenderer renderer, float x, float y, float radius, int points) {
+    private static void drawStar(ShapeRenderer renderer, float x, float y, float radius, int points, float rotation) {
         float innerRadius = radius * 0.4f;
         int totalPoints = points * 2;
 
         float[] vertices = new float[totalPoints * 2];
         for (int i = 0; i < totalPoints; i++) {
-            float angle = -90 + (360f / totalPoints) * i;
+            float angle = rotation - 90 + (360f / totalPoints) * i;
             float r = (i % 2 == 0) ? radius : innerRadius;
             vertices[i * 2] = x + r * MathUtils.cosDeg(angle);
             vertices[i * 2 + 1] = y + r * MathUtils.sinDeg(angle);
@@ -98,58 +102,111 @@ public class ShapeDefinition {
         }
     }
 
-    private static void drawDiamond(ShapeRenderer renderer, float x, float y, float radius) {
+    private static void drawDiamond(ShapeRenderer renderer, float x, float y, float radius, float rotation) {
         float height = radius * 1.3f;
-        renderer.triangle(x, y + height, x - radius, y, x + radius, y);
-        renderer.triangle(x, y - height * 0.7f, x - radius, y, x + radius, y);
+        float[] p1 = rotatePoint(0, height, rotation);
+        float[] p2 = rotatePoint(-radius, 0, rotation);
+        float[] p3 = rotatePoint(radius, 0, rotation);
+        float[] p4 = rotatePoint(0, -height * 0.7f, rotation);
+        renderer.triangle(x + p1[0], y + p1[1], x + p2[0], y + p2[1], x + p3[0], y + p3[1]);
+        renderer.triangle(x + p4[0], y + p4[1], x + p2[0], y + p2[1], x + p3[0], y + p3[1]);
     }
 
-    private static void drawCross(ShapeRenderer renderer, float x, float y, float radius) {
+    private static void drawCross(ShapeRenderer renderer, float x, float y, float radius, float rotation) {
         float thickness = radius * 0.35f;
-        renderer.rect(x - thickness, y - radius, thickness * 2, radius * 2);
-        renderer.rect(x - radius, y - thickness, radius * 2, thickness * 2);
+        // Draw rotated cross using triangles
+        float cos = MathUtils.cosDeg(rotation);
+        float sin = MathUtils.sinDeg(rotation);
+
+        // Vertical bar
+        float[] v1 = rotatePoint(-thickness, -radius, rotation);
+        float[] v2 = rotatePoint(thickness, -radius, rotation);
+        float[] v3 = rotatePoint(thickness, radius, rotation);
+        float[] v4 = rotatePoint(-thickness, radius, rotation);
+        renderer.triangle(x + v1[0], y + v1[1], x + v2[0], y + v2[1], x + v3[0], y + v3[1]);
+        renderer.triangle(x + v1[0], y + v1[1], x + v3[0], y + v3[1], x + v4[0], y + v4[1]);
+
+        // Horizontal bar
+        float[] h1 = rotatePoint(-radius, -thickness, rotation);
+        float[] h2 = rotatePoint(radius, -thickness, rotation);
+        float[] h3 = rotatePoint(radius, thickness, rotation);
+        float[] h4 = rotatePoint(-radius, thickness, rotation);
+        renderer.triangle(x + h1[0], y + h1[1], x + h2[0], y + h2[1], x + h3[0], y + h3[1]);
+        renderer.triangle(x + h1[0], y + h1[1], x + h3[0], y + h3[1], x + h4[0], y + h4[1]);
     }
 
-    private static void drawArrow(ShapeRenderer renderer, float x, float y, float radius) {
+    private static void drawArrow(ShapeRenderer renderer, float x, float y, float radius, float rotation) {
         float bodyWidth = radius * 0.4f;
         float bodyLength = radius * 1.2f;
         float headWidth = radius * 0.8f;
         float headLength = radius * 0.6f;
 
-        // Arrow body
-        renderer.rect(x - bodyWidth / 2, y - bodyLength / 2, bodyWidth, bodyLength);
+        // Arrow pointing in rotation direction
+        float[] b1 = rotatePoint(-bodyWidth / 2, -bodyLength / 2, rotation);
+        float[] b2 = rotatePoint(bodyWidth / 2, -bodyLength / 2, rotation);
+        float[] b3 = rotatePoint(bodyWidth / 2, bodyLength / 2, rotation);
+        float[] b4 = rotatePoint(-bodyWidth / 2, bodyLength / 2, rotation);
+        renderer.triangle(x + b1[0], y + b1[1], x + b2[0], y + b2[1], x + b3[0], y + b3[1]);
+        renderer.triangle(x + b1[0], y + b1[1], x + b3[0], y + b3[1], x + b4[0], y + b4[1]);
+
         // Arrow head
-        renderer.triangle(
-            x, y + bodyLength / 2 + headLength,
-            x - headWidth, y + bodyLength / 2,
-            x + headWidth, y + bodyLength / 2
-        );
+        float[] tip = rotatePoint(0, bodyLength / 2 + headLength, rotation);
+        float[] left = rotatePoint(-headWidth, bodyLength / 2, rotation);
+        float[] right = rotatePoint(headWidth, bodyLength / 2, rotation);
+        renderer.triangle(x + tip[0], y + tip[1], x + left[0], y + left[1], x + right[0], y + right[1]);
     }
 
-    private static void drawHeart(ShapeRenderer renderer, float x, float y, float radius) {
+    private static void drawHeart(ShapeRenderer renderer, float x, float y, float radius, float rotation) {
         float scale = radius * 0.7f;
-        // Draw heart using two circles and a triangle
-        renderer.circle(x - scale * 0.5f, y + scale * 0.3f, scale * 0.5f, 16);
-        renderer.circle(x + scale * 0.5f, y + scale * 0.3f, scale * 0.5f, 16);
-        renderer.triangle(
-            x - scale, y + scale * 0.3f,
-            x + scale, y + scale * 0.3f,
-            x, y - scale
-        );
+        // For simplicity, hearts don't rotate as much - just offset
+        float[] c1 = rotatePoint(-scale * 0.5f, scale * 0.3f, rotation);
+        float[] c2 = rotatePoint(scale * 0.5f, scale * 0.3f, rotation);
+        float[] t1 = rotatePoint(-scale, scale * 0.3f, rotation);
+        float[] t2 = rotatePoint(scale, scale * 0.3f, rotation);
+        float[] t3 = rotatePoint(0, -scale, rotation);
+
+        renderer.circle(x + c1[0], y + c1[1], scale * 0.5f, 16);
+        renderer.circle(x + c2[0], y + c2[1], scale * 0.5f, 16);
+        renderer.triangle(x + t1[0], y + t1[1], x + t2[0], y + t2[1], x + t3[0], y + t3[1]);
     }
 
-    private static void drawCrescent(ShapeRenderer renderer, float x, float y, float radius, Color color) {
-        // Draw crescent by drawing a circle then overlaying with background
+    private static void drawCrescent(ShapeRenderer renderer, float x, float y, float radius, Color color, float rotation) {
+        float[] offset = rotatePoint(radius * 0.4f, 0, rotation);
         renderer.circle(x, y, radius, 32);
-        // We simulate the crescent by drawing with darker offset circle
         Color darker = new Color(color.r * 0.2f, color.g * 0.2f, color.b * 0.2f, 1f);
         renderer.setColor(darker);
-        renderer.circle(x + radius * 0.4f, y, radius * 0.8f, 32);
+        renderer.circle(x + offset[0], y + offset[1], radius * 0.8f, 32);
         renderer.setColor(color);
     }
 
-    private static void drawSemicircle(ShapeRenderer renderer, float x, float y, float radius) {
-        renderer.arc(x, y, radius, 0, 180, 32);
+    private static void drawSemicircle(ShapeRenderer renderer, float x, float y, float radius, float rotation) {
+        renderer.arc(x, y, radius, rotation, 180, 32);
+    }
+
+    private static void drawRotatedEllipse(ShapeRenderer renderer, float x, float y, float radiusX, float radiusY, float rotation) {
+        int segments = 32;
+        for (int i = 0; i < segments; i++) {
+            float angle1 = (360f / segments) * i;
+            float angle2 = (360f / segments) * (i + 1);
+            float[] p1 = rotatePoint(radiusX * MathUtils.cosDeg(angle1), radiusY * MathUtils.sinDeg(angle1), rotation);
+            float[] p2 = rotatePoint(radiusX * MathUtils.cosDeg(angle2), radiusY * MathUtils.sinDeg(angle2), rotation);
+            renderer.triangle(x, y, x + p1[0], y + p1[1], x + p2[0], y + p2[1]);
+        }
+    }
+
+    private static void drawRotatedRect(ShapeRenderer renderer, float x, float y, float halfWidth, float halfHeight, float rotation) {
+        float[] p1 = rotatePoint(-halfWidth, -halfHeight, rotation);
+        float[] p2 = rotatePoint(halfWidth, -halfHeight, rotation);
+        float[] p3 = rotatePoint(halfWidth, halfHeight, rotation);
+        float[] p4 = rotatePoint(-halfWidth, halfHeight, rotation);
+        renderer.triangle(x + p1[0], y + p1[1], x + p2[0], y + p2[1], x + p3[0], y + p3[1]);
+        renderer.triangle(x + p1[0], y + p1[1], x + p3[0], y + p3[1], x + p4[0], y + p4[1]);
+    }
+
+    private static float[] rotatePoint(float px, float py, float rotation) {
+        float cos = MathUtils.cosDeg(rotation);
+        float sin = MathUtils.sinDeg(rotation);
+        return new float[] { px * cos - py * sin, px * sin + py * cos };
     }
 
     public static void drawShapeOutline(ShapeRenderer renderer, ShapeType type, float x, float y, float size, Color color) {

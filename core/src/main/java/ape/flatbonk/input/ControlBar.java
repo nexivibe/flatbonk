@@ -25,13 +25,13 @@ public class ControlBar extends InputAdapter {
         this.keyboardDirection = new Vector2();
         this.useKeyboard = false;
 
-        // Position joystick on left side of control bar
+        // Position joystick on left side of control bar (using viewport coordinates)
         float joystickX = Constants.JOYSTICK_RADIUS + 30;
         float joystickY = Constants.CONTROL_BAR_HEIGHT / 2;
         this.joystick = new VirtualJoystick(joystickX, joystickY);
 
-        // Position dash button on right side
-        float dashX = Constants.WORLD_WIDTH - 80;
+        // Position dash button on right side (using viewport coordinates)
+        float dashX = Constants.VIEWPORT_WIDTH - 80;
         float dashY = Constants.CONTROL_BAR_HEIGHT / 2;
         this.dashButton = new DashButton(dashX, dashY);
 
@@ -124,13 +124,13 @@ public class ControlBar extends InputAdapter {
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.02f, 0.02f, 0.05f, 1f);
-        shapeRenderer.rect(0, 0, Constants.WORLD_WIDTH, Constants.CONTROL_BAR_HEIGHT);
+        shapeRenderer.rect(0, 0, Constants.VIEWPORT_WIDTH, Constants.CONTROL_BAR_HEIGHT);
         shapeRenderer.end();
 
         // Draw neon separator line
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(0f, 1f, 1f, 0.8f); // Cyan neon
-        shapeRenderer.line(0, Constants.CONTROL_BAR_HEIGHT, Constants.WORLD_WIDTH, Constants.CONTROL_BAR_HEIGHT);
+        shapeRenderer.line(0, Constants.CONTROL_BAR_HEIGHT, Constants.VIEWPORT_WIDTH, Constants.CONTROL_BAR_HEIGHT);
         shapeRenderer.end();
 
         // Render controls

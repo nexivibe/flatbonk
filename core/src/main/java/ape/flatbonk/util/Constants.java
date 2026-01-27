@@ -3,11 +3,17 @@ package ape.flatbonk.util;
 public final class Constants {
     private Constants() {}
 
-    // World dimensions
-    public static final float WORLD_WIDTH = 800f;
-    public static final float WORLD_HEIGHT = 480f;
-    public static final float GAME_AREA_HEIGHT = 360f;
-    public static final float CONTROL_BAR_HEIGHT = 120f;
+    // Viewport dimensions (what the camera sees)
+    public static final float VIEWPORT_WIDTH = 800f;
+    public static final float VIEWPORT_HEIGHT = 480f;
+
+    // World dimensions (the actual play area - much larger)
+    public static final float WORLD_WIDTH = 2400f;
+    public static final float WORLD_HEIGHT = 2400f;
+
+    // UI dimensions
+    public static final float CONTROL_BAR_HEIGHT = 100f;
+    public static final float GAME_AREA_HEIGHT = VIEWPORT_HEIGHT - CONTROL_BAR_HEIGHT;
 
     // Player settings
     public static final float PLAYER_BASE_SPEED = 200f;
@@ -23,14 +29,18 @@ public final class Constants {
     public static final int XP_PER_LEVEL = 100;
     public static final int MAX_WEAPONS = 5;
 
-    // Spawning
-    public static final float INITIAL_SPAWN_INTERVAL = 3.0f;
-    public static final float MIN_SPAWN_INTERVAL = 0.5f;
+    // Spawning - fast action pacing for mobile
+    public static final float INITIAL_SPAWN_INTERVAL = 0.8f;
+    public static final float MIN_SPAWN_INTERVAL = 0.2f;
+    public static final float SPAWN_DISTANCE = 350f;
 
-    // Difficulty scaling
-    public static final float DIFFICULTY_INTERVAL = 30f;
-    public static final float HEALTH_SCALE_PER_INTERVAL = 0.10f;
-    public static final float DAMAGE_SCALE_PER_INTERVAL = 0.05f;
+    // Difficulty scaling - aggressive for action feel
+    public static final float DIFFICULTY_INTERVAL = 20f;
+    public static final float HEALTH_SCALE_PER_INTERVAL = 0.15f;
+    public static final float DAMAGE_SCALE_PER_INTERVAL = 0.08f;
+
+    // Knockback
+    public static final float KNOCKBACK_FORCE = 150f;
 
     // UI
     public static final float BUTTON_WIDTH = 200f;
@@ -48,4 +58,8 @@ public final class Constants {
     // Pickup
     public static final float XP_MAGNET_RANGE = 100f;
     public static final float PICKUP_SPEED = 300f;
+
+    // Hazards
+    public static final float HAZARD_LIFETIME = 4f;
+    public static final float HAZARD_SIZE = 30f;
 }

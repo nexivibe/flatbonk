@@ -17,8 +17,8 @@ public class ShapeSelectionScreen extends AbstractGameScreen {
     private static final int ROWS = 3;
     private static final float CELL_SIZE = 100f;
     private static final float CELL_PADDING = 15f;
-    private static final float GRID_START_X = (Constants.WORLD_WIDTH - (COLS * CELL_SIZE + (COLS - 1) * CELL_PADDING)) / 2;
-    private static final float GRID_START_Y = Constants.WORLD_HEIGHT - 120f;
+    private static final float GRID_START_X = (Constants.VIEWPORT_WIDTH - (COLS * CELL_SIZE + (COLS - 1) * CELL_PADDING)) / 2;
+    private static final float GRID_START_Y = Constants.VIEWPORT_HEIGHT - 120f;
 
     private final Rectangle[] cellBounds;
     private final ShapeType[] shapes;
@@ -104,8 +104,8 @@ public class ShapeSelectionScreen extends AbstractGameScreen {
         font.getData().setScale(2f);
         font.setColor(Color.CYAN);
         font.draw(batch, "SELECT YOUR SHAPE",
-            (Constants.WORLD_WIDTH - titleLayout.width) / 2,
-            Constants.WORLD_HEIGHT - 30);
+            (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT - 30);
 
         // Shape name and weapon info when hovering
         if (hoveredIndex >= 0 && hoveredIndex < shapes.length) {
@@ -115,7 +115,7 @@ public class ShapeSelectionScreen extends AbstractGameScreen {
             String info = hovered.getDisplayName() + " - " + hovered.getWeaponName();
             weaponLayout.setText(font, info);
             font.draw(batch, info,
-                (Constants.WORLD_WIDTH - weaponLayout.width) / 2,
+                (Constants.VIEWPORT_WIDTH - weaponLayout.width) / 2,
                 60);
         }
 

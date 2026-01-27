@@ -58,4 +58,8 @@ public abstract class Weapon {
     }
 
     public abstract String getName();
+
+    public String getDescription() {
+        return "A powerful weapon";
+    }
 }

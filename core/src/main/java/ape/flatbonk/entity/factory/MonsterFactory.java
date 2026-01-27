@@ -12,11 +12,13 @@ import ape.flatbonk.util.Constants;
 public class MonsterFactory {
 
     public enum MonsterType {
-        BASIC(30, 10, 80f, 1, 0, 15f),
-        FAST(20, 5, 150f, 1, 0, 12f),
-        TANK(100, 20, 50f, 3, 1, 25f),
-        SWARM(15, 5, 100f, 1, 0, 10f),
-        ELITE(150, 25, 70f, 5, 3, 30f);
+        // Low health for satisfying 1-3 hit kills - scales with difficulty over time
+        // (health, damage, speed, xpValue, moneyValue, size)
+        BASIC(15, 8, 90f, 5, 1, 14f),     // 1 hit kill
+        FAST(12, 6, 180f, 4, 0, 11f),     // 1 hit kill, very fast
+        TANK(35, 15, 55f, 12, 2, 22f),    // 2-3 hits
+        SWARM(8, 4, 120f, 2, 0, 9f),      // 1 hit, comes in groups
+        ELITE(50, 20, 75f, 20, 4, 26f);   // 3-4 hits, rare
 
         final int baseHealth;
         final int baseDamage;
@@ -39,27 +41,24 @@ public class MonsterFactory {
         Entity monster = entityManager.createEntity();
         monster.setTag("monster");
 
-        // Spawn at random edge of screen
-        float x, y;
-        int edge = MathUtils.random(3);
-        switch (edge) {
-            case 0: // Top
-                x = MathUtils.random(Constants.WORLD_WIDTH);
-                y = Constants.WORLD_HEIGHT + type.size;
-                break;
-            case 1: // Right
-                x = Constants.WORLD_WIDTH + type.size;
-                y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT, Constants.WORLD_HEIGHT);
-                break;
-            case 2: // Bottom
-                x = MathUtils.random(Constants.WORLD_WIDTH);
-                y = Constants.CONTROL_BAR_HEIGHT - type.size;
-                break;
-            default: // Left
-                x = -type.size;
-                y = MathUtils.random(Constants.CONTROL_BAR_HEIGHT, Constants.WORLD_HEIGHT);
-                break;
+        // Get player position for spawning around them
+        Entity player = entityManager.getPlayerEntity();
+        float playerX = Constants.WORLD_WIDTH / 2;
+        float playerY = Constants.WORLD_HEIGHT / 2;
+        if (player != null && player.getTransformComponent() != null) {
+            playerX = player.getTransformComponent().getX();
+            playerY = player.getTransformComponent().getY();
         }
+
+        // Spawn at random angle around player at SPAWN_DISTANCE
+        float angle = MathUtils.random(360f);
+        float spawnDist = Constants.SPAWN_DISTANCE + MathUtils.random(-50f, 50f);
+        float x = playerX + MathUtils.cosDeg(angle) * spawnDist;
+        float y = playerY + MathUtils.sinDeg(angle) * spawnDist;
+
+        // Clamp to world bounds
+        x = MathUtils.clamp(x, type.size, Constants.WORLD_WIDTH - type.size);
+        y = MathUtils.clamp(y, Constants.CONTROL_BAR_HEIGHT + type.size, Constants.WORLD_HEIGHT - type.size);
 
         // Transform
         TransformComponent transform = new TransformComponent(x, y);
@@ -81,9 +80,9 @@ public class MonsterFactory {
         render.setSize(type.size);
         monster.addComponent("render", render);
 
-        // Collision
+        // Collision - use the full visual size for better hit detection
         CollisionComponent collision = new CollisionComponent(
-            type.size / 2,
+            type.size * 0.75f,
             CollisionComponent.MASK_MONSTER,
             CollisionComponent.MASK_PLAYER | CollisionComponent.MASK_PLAYER_BULLET
         );
@@ -118,28 +117,38 @@ public class MonsterFactory {
     }
 
     public static MonsterType getRandomType(float elapsedTime) {
-        // Unlock monster types over time
-        if (elapsedTime < 30f) {
-            return MonsterType.BASIC;
-        } else if (elapsedTime < 60f) {
-            return MathUtils.randomBoolean(0.7f) ? MonsterType.BASIC : MonsterType.FAST;
-        } else if (elapsedTime < 90f) {
+        // Fast unlock of monster types for action gameplay
+        if (elapsedTime < 15f) {
+            // Early game: mostly basic with some fast
+            return MathUtils.randomBoolean(0.8f) ? MonsterType.BASIC : MonsterType.FAST;
+        } else if (elapsedTime < 30f) {
+            // Mix it up early
             float roll = MathUtils.random();
-            if (roll < 0.5f) return MonsterType.BASIC;
-            if (roll < 0.8f) return MonsterType.FAST;
-            return MonsterType.TANK;
-        } else if (elapsedTime < 120f) {
-            float roll = MathUtils.random();
-            if (roll < 0.3f) return MonsterType.BASIC;
-            if (roll < 0.5f) return MonsterType.FAST;
-            if (roll < 0.7f) return MonsterType.TANK;
+            if (roll < 0.4f) return MonsterType.BASIC;
+            if (roll < 0.7f) return MonsterType.FAST;
             return MonsterType.SWARM;
-        } else {
+        } else if (elapsedTime < 50f) {
+            // Add tanks
             float roll = MathUtils.random();
-            if (roll < 0.2f) return MonsterType.BASIC;
-            if (roll < 0.35f) return MonsterType.FAST;
-            if (roll < 0.55f) return MonsterType.TANK;
-            if (roll < 0.75f) return MonsterType.SWARM;
+            if (roll < 0.25f) return MonsterType.BASIC;
+            if (roll < 0.45f) return MonsterType.FAST;
+            if (roll < 0.65f) return MonsterType.SWARM;
+            return MonsterType.TANK;
+        } else if (elapsedTime < 80f) {
+            // Full variety, elites start appearing
+            float roll = MathUtils.random();
+            if (roll < 0.15f) return MonsterType.BASIC;
+            if (roll < 0.30f) return MonsterType.FAST;
+            if (roll < 0.50f) return MonsterType.SWARM;
+            if (roll < 0.75f) return MonsterType.TANK;
+            return MonsterType.ELITE;
+        } else {
+            // Late game: heavy enemies, more elites
+            float roll = MathUtils.random();
+            if (roll < 0.10f) return MonsterType.BASIC;
+            if (roll < 0.25f) return MonsterType.FAST;
+            if (roll < 0.45f) return MonsterType.SWARM;
+            if (roll < 0.70f) return MonsterType.TANK;
             return MonsterType.ELITE;
         }
     }

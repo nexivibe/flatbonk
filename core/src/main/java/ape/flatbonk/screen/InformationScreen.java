@@ -40,7 +40,7 @@ public class InformationScreen extends AbstractGameScreen {
         TextButton backButton = new TextButton("BACK", style);
         backButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         backButton.setPosition(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             80
         );
         backButton.addListener(new ClickListener() {
@@ -62,7 +62,7 @@ public class InformationScreen extends AbstractGameScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.2f, 0.3f, 0.5f, 1f);
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             80,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
@@ -73,7 +73,7 @@ public class InformationScreen extends AbstractGameScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.CYAN);
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
             80,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
@@ -87,15 +87,15 @@ public class InformationScreen extends AbstractGameScreen {
         font.getData().setScale(2.5f);
         font.setColor(Color.CYAN);
         font.draw(batch, "INFORMATION",
-            (Constants.WORLD_WIDTH - titleLayout.width) / 2,
-            Constants.WORLD_HEIGHT - 60);
+            (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT - 60);
 
         // Coming Soon message
         font.getData().setScale(2f);
         font.setColor(Color.LIGHT_GRAY);
         font.draw(batch, "Coming Soon!",
-            (Constants.WORLD_WIDTH - comingSoonLayout.width) / 2,
-            Constants.WORLD_HEIGHT / 2 + 30);
+            (Constants.VIEWPORT_WIDTH - comingSoonLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT / 2 + 30);
 
         font.getData().setScale(1.5f);
         font.setColor(Color.WHITE);

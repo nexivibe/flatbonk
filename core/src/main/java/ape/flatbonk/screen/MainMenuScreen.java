@@ -36,8 +36,8 @@ public class MainMenuScreen extends AbstractGameScreen {
         TextButton playButton = new TextButton("PLAY", style);
         playButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         playButton.setPosition(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2
         );
         playButton.addListener(new ClickListener() {
             @Override
@@ -49,8 +49,8 @@ public class MainMenuScreen extends AbstractGameScreen {
         TextButton infoButton = new TextButton("INFO", style);
         infoButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
         infoButton.setPosition(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING
         );
         infoButton.addListener(new ClickListener() {
             @Override
@@ -72,8 +72,8 @@ public class MainMenuScreen extends AbstractGameScreen {
         font.getData().setScale(3f);
         font.setColor(Color.CYAN);
         font.draw(batch, "FLATBONK",
-            (Constants.WORLD_WIDTH - titleLayout.width) / 2,
-            Constants.WORLD_HEIGHT - 80);
+            (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
+            Constants.VIEWPORT_HEIGHT - 80);
         font.getData().setScale(1.5f);
         font.setColor(Color.WHITE);
         batch.end();
@@ -85,16 +85,16 @@ public class MainMenuScreen extends AbstractGameScreen {
 
         // Play button background
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );
 
         // Info button background
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );
@@ -104,14 +104,14 @@ public class MainMenuScreen extends AbstractGameScreen {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.CYAN);
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );
         shapeRenderer.rect(
-            (Constants.WORLD_WIDTH - Constants.BUTTON_WIDTH) / 2,
-            Constants.WORLD_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING,
+            (Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH) / 2,
+            Constants.VIEWPORT_HEIGHT / 2 - Constants.BUTTON_HEIGHT - Constants.BUTTON_PADDING,
             Constants.BUTTON_WIDTH,
             Constants.BUTTON_HEIGHT
         );

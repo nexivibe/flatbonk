@@ -1,5 +1,6 @@
 package ape.flatbonk.system;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import ape.flatbonk.entity.Entity;
@@ -79,6 +80,12 @@ public class InputSystem implements GameSystem {
             float speed = Constants.PLAYER_BASE_SPEED * speedMod;
 
             velocity.set(dir.x * speed, dir.y * speed);
+        }
+
+        // Update player rotation to face movement direction
+        if (dir.len() > 0.1f) {
+            float targetRotation = MathUtils.atan2(dir.y, dir.x) * MathUtils.radiansToDegrees;
+            transform.setRotation(targetRotation);
         }
 
         // Clamp player to game area

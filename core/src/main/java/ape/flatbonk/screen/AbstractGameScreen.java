@@ -23,7 +23,7 @@ public abstract class AbstractGameScreen implements Screen {
 
     public AbstractGameScreen(Main game) {
         this.game = game;
-        this.viewport = new FitViewport(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
+        this.viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
         this.stage = new Stage(viewport);
         this.batch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();

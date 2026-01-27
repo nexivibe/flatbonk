@@ -40,4 +40,9 @@ public class PiercingLaserWeapon extends Weapon {
     public String getName() {
         return "Piercing Laser";
     }
+
+    @Override
+    public String getDescription() {
+        return "Passes through multiple enemies";
+    }
 }

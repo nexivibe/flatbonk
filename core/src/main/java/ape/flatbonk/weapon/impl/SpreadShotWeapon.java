@@ -34,4 +34,9 @@ public class SpreadShotWeapon extends Weapon {
     public String getName() {
         return "Spread Shot";
     }
+
+    @Override
+    public String getDescription() {
+        return "Fires projectiles in a wide arc";
+    }
 }

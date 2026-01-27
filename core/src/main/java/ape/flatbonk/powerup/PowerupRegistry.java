@@ -2,6 +2,7 @@ package ape.flatbonk.powerup;
 
 import com.badlogic.gdx.math.MathUtils;
 
+import ape.flatbonk.entity.Entity;
 import ape.flatbonk.powerup.impl.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class PowerupRegistry {
     private final List<Powerup> availablePowerups;
+    private final NewWeaponPowerup weaponPowerup;
 
     public PowerupRegistry() {
         availablePowerups = new ArrayList<Powerup>();
@@ -19,6 +21,12 @@ public class PowerupRegistry {
         availablePowerups.add(new ArmorPowerup());
         availablePowerups.add(new PickupRangePowerup());
         availablePowerups.add(new RegenPowerup());
+        weaponPowerup = new NewWeaponPowerup();
+        availablePowerups.add(weaponPowerup);
+    }
+
+    public void refreshWeaponPowerup(Entity player) {
+        weaponPowerup.refreshWeapon(player);
     }
 
     public List<Powerup> getRandomPowerups(int count) {

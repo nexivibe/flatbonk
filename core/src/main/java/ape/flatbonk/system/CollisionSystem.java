@@ -5,6 +5,7 @@ import ape.flatbonk.entity.EntityManager;
 import ape.flatbonk.entity.component.*;
 import ape.flatbonk.entity.factory.PickupFactory;
 import ape.flatbonk.state.GameState;
+import ape.flatbonk.util.Constants;
 
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class CollisionSystem implements GameSystem {
         List<Entity> bullets = entityManager.getEntitiesWithTag("playerBullet");
         bullets.addAll(entityManager.getEntitiesWithTag("homingBullet"));
         bullets.addAll(entityManager.getEntitiesWithTag("piercingBullet"));
+        bullets.addAll(entityManager.getEntitiesWithTag("lifeDrainBullet"));
 
         for (Entity bullet : bullets) {
             if (!bullet.isActive()) continue;
@@ -87,6 +89,30 @@ public class CollisionSystem implements GameSystem {
                     }
 
                     monsterHealth.damage(damage);
+
+                    // Apply knockback to monster
+                    VelocityComponent monsterVelocity = monster.getVelocityComponent();
+                    if (monsterVelocity != null) {
+                        float dx = monsterTransform.getX() - bulletTransform.getX();
+                        float dy = monsterTransform.getY() - bulletTransform.getY();
+                        float len = (float) Math.sqrt(dx * dx + dy * dy);
+                        if (len > 0) {
+                            dx /= len;
+                            dy /= len;
+                            monsterVelocity.addKnockback(dx, dy, Constants.KNOCKBACK_FORCE);
+                        }
+                    }
+
+                    // Track damage dealt as score
+                    gameState.addDamageDealt(damage);
+
+                    // Handle life drain healing
+                    if (bullet.getTag().equals("lifeDrainBullet")) {
+                        if (playerHealth != null) {
+                            int healAmount = Math.max(1, damage / 4); // Heal 25% of damage dealt
+                            playerHealth.heal(healAmount);
+                        }
+                    }
 
                     // Handle bullet based on type
                     if (bullet.getTag().equals("piercingBullet")) {
@@ -130,8 +156,6 @@ public class CollisionSystem implements GameSystem {
         if (playerHealth != null) {
             playerHealth.update(delta);
         }
-
-        entityManager.update();
     }
 
     @Override
