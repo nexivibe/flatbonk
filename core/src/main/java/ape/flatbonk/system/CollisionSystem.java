@@ -40,6 +40,19 @@ public class CollisionSystem implements GameSystem {
             if (monsterTransform == null || monsterCollision == null) continue;
 
             if (playerCollision.overlaps(playerTransform, monsterTransform, monsterCollision)) {
+                // Knockback monster away from player on any collision
+                VelocityComponent monsterVelocity = monster.getVelocityComponent();
+                if (monsterVelocity != null) {
+                    float dx = monsterTransform.getX() - playerTransform.getX();
+                    float dy = monsterTransform.getY() - playerTransform.getY();
+                    float len = (float) Math.sqrt(dx * dx + dy * dy);
+                    if (len > 0) {
+                        dx /= len;
+                        dy /= len;
+                        monsterVelocity.addKnockback(dx, dy, Constants.KNOCKBACK_FORCE * 1.5f);
+                    }
+                }
+
                 // Player takes damage from monster
                 if (playerHealth != null && !playerHealth.isInvincible()) {
                     int damage = (int) (10 * gameState.getDamageMultiplier());
@@ -129,16 +142,16 @@ public class CollisionSystem implements GameSystem {
 
                     // Check if monster died
                     if (monsterHealth.isDead()) {
-                        // Spawn pickups
+                        // Spawn burst of pickups that scatter
                         DropComponent drop = monster.getDropComponent();
                         if (drop != null) {
                             if (drop.getXpValue() > 0) {
-                                PickupFactory.createXPOrb(entityManager,
+                                PickupFactory.createXPOrbBurst(entityManager,
                                     monsterTransform.getX(), monsterTransform.getY(),
                                     drop.getXpValue());
                             }
                             if (drop.getMoneyValue() > 0) {
-                                PickupFactory.createMoneyPickup(entityManager,
+                                PickupFactory.createMoneyBurst(entityManager,
                                     monsterTransform.getX(), monsterTransform.getY(),
                                     drop.getMoneyValue());
                             }
@@ -147,6 +160,42 @@ public class CollisionSystem implements GameSystem {
                         gameState.addKill();
                     }
 
+                    break;
+                }
+            }
+        }
+
+        // Check player bullet - fireball hazard collisions (destroy fireballs when shot)
+        List<Entity> fireballs = entityManager.getEntitiesWithTag("hazard_fireball");
+        for (Entity bullet : bullets) {
+            if (!bullet.isActive()) continue;
+
+            TransformComponent bulletTransform = bullet.getTransformComponent();
+            CollisionComponent bulletCollision = bullet.getCollisionComponent();
+
+            if (bulletTransform == null || bulletCollision == null) continue;
+
+            for (Entity fireball : fireballs) {
+                if (!fireball.isActive()) continue;
+
+                TransformComponent fireballTransform = fireball.getTransformComponent();
+                CollisionComponent fireballCollision = fireball.getCollisionComponent();
+
+                if (fireballTransform == null || fireballCollision == null) continue;
+
+                // Check overlap using radius-based collision
+                float dx = fireballTransform.getX() - bulletTransform.getX();
+                float dy = fireballTransform.getY() - bulletTransform.getY();
+                float distSq = dx * dx + dy * dy;
+                float radiusSum = bulletCollision.getRadius() + fireballCollision.getRadius();
+
+                if (distSq <= radiusSum * radiusSum) {
+                    // Destroy fireball when hit
+                    entityManager.removeEntity(fireball);
+                    // Destroy bullet too (unless piercing)
+                    if (!bullet.getTag().equals("piercingBullet")) {
+                        entityManager.removeEntity(bullet);
+                    }
                     break;
                 }
             }

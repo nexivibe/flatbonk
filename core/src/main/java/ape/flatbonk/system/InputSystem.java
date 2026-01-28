@@ -70,7 +70,9 @@ public class InputSystem implements GameSystem {
         // Apply movement
         if (isDashing) {
             dashTimer -= delta;
-            velocity.set(dashDirX * Constants.DASH_SPEED, dashDirY * Constants.DASH_SPEED);
+            float dashMod = stats != null ? stats.getDashDistanceModifier() : 1f;
+            float dashSpeed = Constants.DASH_SPEED * dashMod;
+            velocity.set(dashDirX * dashSpeed, dashDirY * dashSpeed);
 
             if (dashTimer <= 0) {
                 isDashing = false;

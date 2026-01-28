@@ -14,8 +14,9 @@ import ape.flatbonk.util.PlayerColor;
 import ape.flatbonk.util.ShapeType;
 
 public class ColorSelectionScreen extends AbstractGameScreen {
-    private static final float BUTTON_SIZE = 120f;
-    private static final float BUTTON_SPACING = 30f;
+    // Portrait mode: 2x2 grid
+    private static final float BUTTON_SIZE = 100f;
+    private static final float BUTTON_SPACING = 20f;
 
     private final Rectangle[] colorBounds;
     private final PlayerColor[] colors;
@@ -41,12 +42,17 @@ public class ColorSelectionScreen extends AbstractGameScreen {
     }
 
     private void initColorBounds() {
-        float totalWidth = colors.length * BUTTON_SIZE + (colors.length - 1) * BUTTON_SPACING;
+        // 2x2 grid for portrait mode
+        int cols = 2;
+        float totalWidth = cols * BUTTON_SIZE + (cols - 1) * BUTTON_SPACING;
         float startX = (Constants.VIEWPORT_WIDTH - totalWidth) / 2;
-        float y = Constants.VIEWPORT_HEIGHT / 2 - BUTTON_SIZE / 2;
+        float startY = Constants.VIEWPORT_HEIGHT / 2 + BUTTON_SIZE / 2 + BUTTON_SPACING / 2;
 
         for (int i = 0; i < colors.length; i++) {
-            float x = startX + i * (BUTTON_SIZE + BUTTON_SPACING);
+            int col = i % cols;
+            int row = i / cols;
+            float x = startX + col * (BUTTON_SIZE + BUTTON_SPACING);
+            float y = startY - row * (BUTTON_SIZE + BUTTON_SPACING) - BUTTON_SIZE;
             colorBounds[i] = new Rectangle(x, y, BUTTON_SIZE, BUTTON_SIZE);
         }
     }

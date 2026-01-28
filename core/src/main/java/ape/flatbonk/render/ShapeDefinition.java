@@ -257,4 +257,106 @@ public class ShapeDefinition {
             );
         }
     }
+
+    /**
+     * Draw an irregular polygon with jagged edges for monster rendering
+     */
+    public static void drawIrregularPolygon(ShapeRenderer renderer, float x, float y, float radius,
+            int sides, float[] vertexOffsets, Color color, float rotation) {
+        renderer.setColor(color);
+
+        float[] vertices = new float[sides * 2];
+        for (int i = 0; i < sides; i++) {
+            float angle = rotation + (360f / sides) * i;
+            float r = radius;
+            if (vertexOffsets != null && i < vertexOffsets.length) {
+                r = radius * (0.7f + vertexOffsets[i] * 0.5f);  // Vary radius 70%-120%
+            }
+            vertices[i * 2] = x + r * MathUtils.cosDeg(angle);
+            vertices[i * 2 + 1] = y + r * MathUtils.sinDeg(angle);
+        }
+
+        // Draw as triangles from center
+        for (int i = 0; i < sides; i++) {
+            int next = (i + 1) % sides;
+            renderer.triangle(x, y,
+                vertices[i * 2], vertices[i * 2 + 1],
+                vertices[next * 2], vertices[next * 2 + 1]);
+        }
+    }
+
+    /**
+     * Generate random vertex offsets for irregular polygon
+     */
+    public static float[] generateVertexOffsets(int sides) {
+        float[] offsets = new float[sides];
+        for (int i = 0; i < sides; i++) {
+            offsets[i] = MathUtils.random(0.4f, 1.0f);
+        }
+        return offsets;
+    }
+
+    /**
+     * Generate organ positions for Flatlandia-style internal details
+     * Returns array of [x1, y1, size1, x2, y2, size2, ...] relative to center
+     */
+    public static float[] generateOrganOffsets(int organCount, float maxRadius) {
+        float[] organs = new float[organCount * 3];
+        for (int i = 0; i < organCount; i++) {
+            // Random position inside the polygon (keep organs toward center)
+            float angle = MathUtils.random(360f);
+            float dist = MathUtils.random(0.1f, 0.5f) * maxRadius;
+            organs[i * 3] = MathUtils.cosDeg(angle) * dist;      // x offset
+            organs[i * 3 + 1] = MathUtils.sinDeg(angle) * dist;  // y offset
+            organs[i * 3 + 2] = MathUtils.random(0.08f, 0.2f);   // size as fraction of monster size
+        }
+        return organs;
+    }
+
+    /**
+     * Draw organs inside a monster (Flatlandia style - visible internals)
+     */
+    public static void drawOrgans(ShapeRenderer renderer, float x, float y, float size,
+            float[] organOffsets, int organCount, Color baseColor) {
+        if (organOffsets == null || organCount <= 0) return;
+
+        // Darker color for organs
+        Color organColor = new Color(baseColor.r * 0.4f, baseColor.g * 0.4f, baseColor.b * 0.4f, 0.8f);
+
+        for (int i = 0; i < organCount && i * 3 + 2 < organOffsets.length; i++) {
+            float ox = x + organOffsets[i * 3] * size;
+            float oy = y + organOffsets[i * 3 + 1] * size;
+            float osize = organOffsets[i * 3 + 2] * size;
+
+            renderer.setColor(organColor);
+            renderer.circle(ox, oy, osize);
+        }
+    }
+
+    /**
+     * Draw outline for Flatlandia style
+     */
+    public static void drawIrregularPolygonOutline(ShapeRenderer renderer, float x, float y, float radius,
+            int sides, float[] vertexOffsets, Color color, float rotation) {
+        renderer.setColor(color);
+
+        for (int i = 0; i < sides; i++) {
+            float angle1 = rotation + (360f / sides) * i;
+            float angle2 = rotation + (360f / sides) * ((i + 1) % sides);
+
+            float r1 = radius;
+            float r2 = radius;
+            if (vertexOffsets != null) {
+                if (i < vertexOffsets.length) r1 = radius * (0.7f + vertexOffsets[i] * 0.5f);
+                if ((i + 1) % sides < vertexOffsets.length) r2 = radius * (0.7f + vertexOffsets[(i + 1) % sides] * 0.5f);
+            }
+
+            float x1 = x + r1 * MathUtils.cosDeg(angle1);
+            float y1 = y + r1 * MathUtils.sinDeg(angle1);
+            float x2 = x + r2 * MathUtils.cosDeg(angle2);
+            float y2 = y + r2 * MathUtils.sinDeg(angle2);
+
+            renderer.line(x1, y1, x2, y2);
+        }
+    }
 }

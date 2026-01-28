@@ -6,9 +6,9 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import ape.flatbonk.state.GameSettings;
 import ape.flatbonk.util.Constants;
 
 public class ControlBar extends InputAdapter {
@@ -19,24 +19,40 @@ public class ControlBar extends InputAdapter {
     private final Vector2 keyboardDirection;
     private boolean useKeyboard;
 
-    public ControlBar(Stage stage, Viewport viewport) {
+    public ControlBar(Viewport viewport) {
         this.viewport = viewport;
         this.touchPoint = new Vector3();
         this.keyboardDirection = new Vector2();
         this.useKeyboard = false;
 
-        // Position joystick on left side of control bar (using viewport coordinates)
-        float joystickX = Constants.JOYSTICK_RADIUS + 30;
-        float joystickY = Constants.CONTROL_BAR_HEIGHT / 2;
-        this.joystick = new VirtualJoystick(joystickX, joystickY);
+        // Get handedness preference
+        boolean leftHanded = GameSettings.getInstance().isLeftHanded();
 
-        // Position dash button on right side (using viewport coordinates)
-        float dashX = Constants.VIEWPORT_WIDTH - 80;
+        // Position controls for single-hand operation
+        // Right-handed (default): Joystick centered-right, Dash to left of joystick
+        // Left-handed: Joystick centered-left, Dash to right of joystick
+        float centerX = Constants.VIEWPORT_WIDTH / 2;
+        float joystickOffset = Constants.JOYSTICK_RADIUS + 20;  // Offset from center
+        float dashOffset = Constants.JOYSTICK_RADIUS * 2 + 50;  // Distance between joystick and dash
+
+        float joystickX, dashX;
+        if (leftHanded) {
+            // Left-handed: joystick on left, dash to right of joystick
+            joystickX = centerX - joystickOffset;
+            dashX = joystickX + dashOffset;
+        } else {
+            // Right-handed: joystick on right, dash to left of joystick
+            joystickX = centerX + joystickOffset;
+            dashX = joystickX - dashOffset;
+        }
+
+        float joystickY = Constants.CONTROL_BAR_HEIGHT / 2;
         float dashY = Constants.CONTROL_BAR_HEIGHT / 2;
+
+        this.joystick = new VirtualJoystick(joystickX, joystickY);
         this.dashButton = new DashButton(dashX, dashY);
 
-        // Set this as input processor (combined with stage)
-        Gdx.input.setInputProcessor(new com.badlogic.gdx.InputMultiplexer(stage, this));
+        // Note: Input processor is set by GameScreen.show() to include this ControlBar
     }
 
     @Override

@@ -21,10 +21,10 @@ public class CleanupSystem implements GameSystem {
         for (Entity entity : entities) {
             if (!entity.isActive()) continue;
 
-            // Remove expired entities
+            // Remove expired entities (only if they should be destroyed)
             if (entity.hasComponent("lifetime")) {
                 LifetimeComponent lifetime = entity.getLifetimeComponent();
-                if (lifetime.isExpired()) {
+                if (lifetime.isExpired() && lifetime.shouldDestroyOnExpire()) {
                     entityManager.removeEntity(entity);
                     continue;
                 }

@@ -2,7 +2,7 @@ package ape.flatbonk;
 
 import com.badlogic.gdx.Game;
 
-import ape.flatbonk.screen.MainMenuScreen;
+import ape.flatbonk.screen.SplashScreen;
 import ape.flatbonk.state.PlayerConfig;
 
 public class Main extends Game {
@@ -11,7 +11,7 @@ public class Main extends Game {
     @Override
     public void create() {
         playerConfig = new PlayerConfig();
-        setScreen(new MainMenuScreen(this));
+        setScreen(new SplashScreen(this));
     }
 
     public PlayerConfig getPlayerConfig() {

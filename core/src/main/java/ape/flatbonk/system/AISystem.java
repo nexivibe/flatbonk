@@ -46,8 +46,62 @@ public class AISystem implements GameSystem {
             }
         }
 
+        // Monster separation - prevent overlapping
+        separateMonsters(aiEntities);
+
         // Update homing bullets
         updateHomingBullets(playerTransform);
+    }
+
+    private void separateMonsters(List<Entity> monsters) {
+        float separationForce = 80f;  // How strongly they push apart
+
+        for (int i = 0; i < monsters.size(); i++) {
+            Entity a = monsters.get(i);
+            if (!a.isActive() || !a.getTag().equals("monster")) continue;
+
+            TransformComponent transformA = a.getTransformComponent();
+            VelocityComponent velocityA = a.getVelocityComponent();
+            CollisionComponent collisionA = a.getCollisionComponent();
+
+            if (transformA == null || velocityA == null || collisionA == null) continue;
+
+            float radiusA = collisionA.getRadius();
+
+            for (int j = i + 1; j < monsters.size(); j++) {
+                Entity b = monsters.get(j);
+                if (!b.isActive() || !b.getTag().equals("monster")) continue;
+
+                TransformComponent transformB = b.getTransformComponent();
+                VelocityComponent velocityB = b.getVelocityComponent();
+                CollisionComponent collisionB = b.getCollisionComponent();
+
+                if (transformB == null || velocityB == null || collisionB == null) continue;
+
+                float radiusB = collisionB.getRadius();
+                float minDist = radiusA + radiusB;
+
+                float dx = transformB.getX() - transformA.getX();
+                float dy = transformB.getY() - transformA.getY();
+                float dist = (float) Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < minDist && dist > 0.1f) {
+                    // Overlap detected - push apart
+                    float overlap = minDist - dist;
+                    float nx = dx / dist;
+                    float ny = dy / dist;
+
+                    // Apply separation force as velocity adjustment
+                    float pushX = nx * separationForce * (overlap / minDist);
+                    float pushY = ny * separationForce * (overlap / minDist);
+
+                    velocityA.setVx(velocityA.getVx() - pushX);
+                    velocityA.setVy(velocityA.getVy() - pushY);
+                    velocityB.setVx(velocityB.getVx() + pushX);
+                    velocityB.setVy(velocityB.getVy() + pushY);
+                }
+            }
+        }
     }
 
     private void updateChase(TransformComponent transform, VelocityComponent velocity,

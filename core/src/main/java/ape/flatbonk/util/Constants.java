@@ -3,9 +3,9 @@ package ape.flatbonk.util;
 public final class Constants {
     private Constants() {}
 
-    // Viewport dimensions (what the camera sees)
-    public static final float VIEWPORT_WIDTH = 800f;
-    public static final float VIEWPORT_HEIGHT = 480f;
+    // Viewport dimensions (portrait mode for mobile)
+    public static final float VIEWPORT_WIDTH = 480f;
+    public static final float VIEWPORT_HEIGHT = 800f;
 
     // World dimensions (the actual play area - much larger)
     public static final float WORLD_WIDTH = 2400f;

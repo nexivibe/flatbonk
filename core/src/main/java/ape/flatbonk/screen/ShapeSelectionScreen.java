@@ -13,12 +13,13 @@ import ape.flatbonk.util.Constants;
 import ape.flatbonk.util.ShapeType;
 
 public class ShapeSelectionScreen extends AbstractGameScreen {
-    private static final int COLS = 5;
-    private static final int ROWS = 3;
-    private static final float CELL_SIZE = 100f;
-    private static final float CELL_PADDING = 15f;
+    // Portrait mode: 3 columns x 5 rows
+    private static final int COLS = 3;
+    private static final int ROWS = 5;
+    private static final float CELL_SIZE = 80f;
+    private static final float CELL_PADDING = 12f;
     private static final float GRID_START_X = (Constants.VIEWPORT_WIDTH - (COLS * CELL_SIZE + (COLS - 1) * CELL_PADDING)) / 2;
-    private static final float GRID_START_Y = Constants.VIEWPORT_HEIGHT - 120f;
+    private static final float GRID_START_Y = Constants.VIEWPORT_HEIGHT - 100f;
 
     private final Rectangle[] cellBounds;
     private final ShapeType[] shapes;

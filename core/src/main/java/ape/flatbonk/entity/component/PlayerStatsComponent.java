@@ -7,6 +7,12 @@ public class PlayerStatsComponent {
     private float pickupRangeModifier;
     private float healthRegenRate;
     private int armor;
+    private float dashDistanceModifier;
+    private float xpBonusModifier;
+    private int projectileBonus;
+    private float projectileSizeModifier;
+    private float critChance;
+    private float critMultiplier;
 
     public PlayerStatsComponent() {
         this.speedModifier = 1f;
@@ -15,6 +21,12 @@ public class PlayerStatsComponent {
         this.pickupRangeModifier = 1f;
         this.healthRegenRate = 0f;
         this.armor = 0;
+        this.dashDistanceModifier = 1f;
+        this.xpBonusModifier = 1f;
+        this.projectileBonus = 0;
+        this.projectileSizeModifier = 1f;
+        this.critChance = 0f;
+        this.critMultiplier = 2f;
     }
 
     public float getSpeedModifier() {
@@ -91,5 +103,53 @@ public class PlayerStatsComponent {
 
     public int calculateDamageReduction(int rawDamage) {
         return Math.max(1, rawDamage - armor);
+    }
+
+    public float getDashDistanceModifier() {
+        return dashDistanceModifier;
+    }
+
+    public void addDashDistanceModifier(float amount) {
+        this.dashDistanceModifier += amount;
+    }
+
+    public float getXpBonusModifier() {
+        return xpBonusModifier;
+    }
+
+    public void addXpBonusModifier(float amount) {
+        this.xpBonusModifier += amount;
+    }
+
+    public int getProjectileBonus() {
+        return projectileBonus;
+    }
+
+    public void addProjectileBonus(int amount) {
+        this.projectileBonus += amount;
+    }
+
+    public float getProjectileSizeModifier() {
+        return projectileSizeModifier;
+    }
+
+    public void addProjectileSizeModifier(float amount) {
+        this.projectileSizeModifier += amount;
+    }
+
+    public float getCritChance() {
+        return critChance;
+    }
+
+    public void addCritChance(float amount) {
+        this.critChance = Math.min(0.75f, this.critChance + amount);
+    }
+
+    public float getCritMultiplier() {
+        return critMultiplier;
+    }
+
+    public void addCritMultiplier(float amount) {
+        this.critMultiplier += amount;
     }
 }

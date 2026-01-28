@@ -93,6 +93,10 @@ public class Entity {
         return getComponent("playerStats", PlayerStatsComponent.class);
     }
 
+    public FloatingTextComponent getFloatingTextComponent() {
+        return getComponent("floatingText", FloatingTextComponent.class);
+    }
+
     public void reset() {
         components.clear();
         active = true;

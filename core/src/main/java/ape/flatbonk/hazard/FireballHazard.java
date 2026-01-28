@@ -12,13 +12,20 @@ import ape.flatbonk.util.Constants;
 import java.util.List;
 
 public class FireballHazard extends Hazard {
+    private static final int MAX_FIREBALLS = 3;
 
     public FireballHazard() {
-        super(2.0f);
+        super(4.0f);  // Spawn every 4 seconds
     }
 
     @Override
     protected void spawnHazard(EntityManager entityManager, GameState gameState) {
+        // Limit number of active fireballs
+        List<Entity> existingFireballs = entityManager.getEntitiesWithTag("hazard_fireball");
+        if (existingFireballs.size() >= MAX_FIREBALLS) {
+            return;
+        }
+
         Entity fireball = entityManager.createEntity();
         fireball.setTag("hazard_fireball");
 
@@ -88,10 +95,13 @@ public class FireballHazard extends Hazard {
                 playerCollision != null && playerTransform != null) {
 
                 if (playerCollision.overlaps(playerTransform, fireballTransform, fireballCollision)) {
+                    // Always remove fireball on collision
+                    entityManager.removeEntity(fireball);
+
+                    // Only damage if player not invincible
                     if (playerHealth != null && !playerHealth.isInvincible()) {
                         int damage = (int) (15 * gameState.getDamageMultiplier());
                         playerHealth.damage(damage);
-                        entityManager.removeEntity(fireball);
 
                         if (playerHealth.isDead()) {
                             gameState.setGameOver(true);

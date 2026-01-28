@@ -16,7 +16,8 @@ import ape.flatbonk.util.PlayerColor;
 import ape.flatbonk.util.ShapeType;
 
 public class ConfirmationScreen extends AbstractGameScreen {
-    private static final float PREVIEW_SIZE = 150f;
+    // Smaller preview for portrait mode
+    private static final float PREVIEW_SIZE = 100f;
 
     private final GlyphLayout titleLayout;
     private float rotationAngle = 0f;
@@ -39,10 +40,13 @@ public class ConfirmationScreen extends AbstractGameScreen {
         style.overFontColor = Color.YELLOW;
         style.downFontColor = Color.GRAY;
 
+        float buttonWidth = Constants.BUTTON_WIDTH * 0.8f;
+        float centerX = (Constants.VIEWPORT_WIDTH - buttonWidth) / 2;
+
         // Back to shape selection
         TextButton shapeButton = new TextButton("< SHAPE", style);
-        shapeButton.setSize(Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
-        shapeButton.setPosition(60, 60);
+        shapeButton.setSize(buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
+        shapeButton.setPosition(20, 100);
         shapeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -52,8 +56,8 @@ public class ConfirmationScreen extends AbstractGameScreen {
 
         // Back to color selection
         TextButton colorButton = new TextButton("< COLOR", style);
-        colorButton.setSize(Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
-        colorButton.setPosition(60, 130);
+        colorButton.setSize(buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
+        colorButton.setPosition(Constants.VIEWPORT_WIDTH - buttonWidth * 0.6f - 20, 100);
         colorButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -61,10 +65,10 @@ public class ConfirmationScreen extends AbstractGameScreen {
             }
         });
 
-        // Ready button
+        // Ready button - bottom center
         TextButton readyButton = new TextButton("READY!", style);
-        readyButton.setSize(Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
-        readyButton.setPosition(Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH - 60, 80);
+        readyButton.setSize(buttonWidth, Constants.BUTTON_HEIGHT);
+        readyButton.setPosition(centerX, 170);
         readyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -87,6 +91,9 @@ public class ConfirmationScreen extends AbstractGameScreen {
         ShapeType shape = config.getSelectedShape();
         PlayerColor color = config.getSelectedColor();
 
+        float buttonWidth = Constants.BUTTON_WIDTH * 0.8f;
+        float centerX = (Constants.VIEWPORT_WIDTH - buttonWidth) / 2;
+
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
         // Draw button backgrounds
@@ -94,17 +101,16 @@ public class ConfirmationScreen extends AbstractGameScreen {
 
         // Back buttons background
         shapeRenderer.setColor(0.2f, 0.25f, 0.35f, 1f);
-        shapeRenderer.rect(60, 60, Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
-        shapeRenderer.rect(60, 130, Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
+        shapeRenderer.rect(20, 100, buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
+        shapeRenderer.rect(Constants.VIEWPORT_WIDTH - buttonWidth * 0.6f - 20, 100, buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
 
         // Ready button background (green tint)
         shapeRenderer.setColor(0.2f, 0.4f, 0.2f, 1f);
-        shapeRenderer.rect(Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH - 60, 80,
-            Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
+        shapeRenderer.rect(centerX, 170, buttonWidth, Constants.BUTTON_HEIGHT);
 
-        // Preview area background
+        // Preview area background - upper portion of screen
         float previewX = Constants.VIEWPORT_WIDTH / 2;
-        float previewY = Constants.VIEWPORT_HEIGHT / 2 + 20;
+        float previewY = Constants.VIEWPORT_HEIGHT - 200;
         shapeRenderer.setColor(0.1f, 0.12f, 0.18f, 1f);
         shapeRenderer.rect(previewX - PREVIEW_SIZE, previewY - PREVIEW_SIZE,
             PREVIEW_SIZE * 2, PREVIEW_SIZE * 2);
@@ -114,11 +120,10 @@ public class ConfirmationScreen extends AbstractGameScreen {
         // Draw borders
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.CYAN);
-        shapeRenderer.rect(60, 60, Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
-        shapeRenderer.rect(60, 130, Constants.BUTTON_WIDTH * 0.6f, Constants.BUTTON_HEIGHT);
+        shapeRenderer.rect(20, 100, buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
+        shapeRenderer.rect(Constants.VIEWPORT_WIDTH - buttonWidth * 0.6f - 20, 100, buttonWidth * 0.6f, Constants.BUTTON_HEIGHT * 0.8f);
         shapeRenderer.setColor(Color.GREEN);
-        shapeRenderer.rect(Constants.VIEWPORT_WIDTH - Constants.BUTTON_WIDTH - 60, 80,
-            Constants.BUTTON_WIDTH, Constants.BUTTON_HEIGHT);
+        shapeRenderer.rect(centerX, 170, buttonWidth, Constants.BUTTON_HEIGHT);
         shapeRenderer.setColor(color.getColor());
         shapeRenderer.rect(previewX - PREVIEW_SIZE, previewY - PREVIEW_SIZE,
             PREVIEW_SIZE * 2, PREVIEW_SIZE * 2);
@@ -140,23 +145,22 @@ public class ConfirmationScreen extends AbstractGameScreen {
             (Constants.VIEWPORT_WIDTH - titleLayout.width) / 2,
             Constants.VIEWPORT_HEIGHT - 40);
 
-        // Shape and color info
-        font.getData().setScale(1.3f);
-        font.setColor(Color.WHITE);
+        // Shape and color info - below preview, centered
+        font.getData().setScale(1.1f);
         String shapeInfo = "Shape: " + shape.getDisplayName();
         String weaponInfo = "Weapon: " + shape.getWeaponName();
         String colorInfo = "Color: " + color.getDisplayName();
         String hazardInfo = "Hazard: " + color.getHazardName();
 
-        float infoX = Constants.VIEWPORT_WIDTH / 2 - PREVIEW_SIZE - 180;
-        float infoY = Constants.VIEWPORT_HEIGHT / 2 + 80;
+        float infoY = previewY - PREVIEW_SIZE - 30;
+        float lineHeight = 28f;
 
         font.setColor(Color.LIGHT_GRAY);
-        font.draw(batch, shapeInfo, infoX, infoY);
-        font.draw(batch, weaponInfo, infoX, infoY - 30);
+        font.draw(batch, shapeInfo, 40, infoY);
+        font.draw(batch, weaponInfo, 40, infoY - lineHeight);
         font.setColor(color.getColor());
-        font.draw(batch, colorInfo, infoX, infoY - 70);
-        font.draw(batch, hazardInfo, infoX, infoY - 100);
+        font.draw(batch, colorInfo, 40, infoY - lineHeight * 2);
+        font.draw(batch, hazardInfo, 40, infoY - lineHeight * 3);
 
         font.getData().setScale(1.5f);
         font.setColor(Color.WHITE);

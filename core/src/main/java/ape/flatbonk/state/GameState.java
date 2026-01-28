@@ -1,45 +1,72 @@
 package ape.flatbonk.state;
 
+import com.badlogic.gdx.math.MathUtils;
+
 import ape.flatbonk.util.Constants;
 import ape.flatbonk.util.PlayerColor;
 import ape.flatbonk.util.ShapeType;
 
 public class GameState {
     private final PlayerConfig playerConfig;
+    private long gameSeed;
 
     private int playerLevel;
     private int currentXP;
+    private int xpForNextLevel;
     private int money;
     private int killCount;
     private int score;
     private int totalDamageDealt;
     private float elapsedTime;
     private boolean gameOver;
+    private float xpBonusModifier;
 
     private float difficultyMultiplier;
     private float healthMultiplier;
     private float damageMultiplier;
     private float spawnInterval;
 
+    // Base kills needed: 3 for first, then +1 per level (3, 4, 5, 6...)
+    private static final int BASE_KILLS_FOR_LEVEL = 3;
+    private static final int XP_PER_KILL = 5;
+
     public GameState(PlayerConfig playerConfig) {
         this.playerConfig = playerConfig;
+        this.gameSeed = System.currentTimeMillis();
+        reset();
+    }
+
+    public GameState(PlayerConfig playerConfig, long seed) {
+        this.playerConfig = playerConfig;
+        this.gameSeed = seed;
         reset();
     }
 
     public void reset() {
         this.playerLevel = 1;
         this.currentXP = 0;
+        this.xpForNextLevel = calculateXpForLevel(1);
         this.money = 0;
         this.killCount = 0;
         this.score = 0;
         this.totalDamageDealt = 0;
         this.elapsedTime = 0;
         this.gameOver = false;
+        this.xpBonusModifier = 1f;
 
         this.difficultyMultiplier = 1f;
         this.healthMultiplier = 1f;
         this.damageMultiplier = 1f;
         this.spawnInterval = Constants.INITIAL_SPAWN_INTERVAL;
+
+        // Initialize random with seed
+        MathUtils.random.setSeed(gameSeed);
+    }
+
+    private int calculateXpForLevel(int level) {
+        // Level 1: 3 kills, Level 2: 4 kills, Level 3: 5 kills, etc.
+        int killsNeeded = BASE_KILLS_FOR_LEVEL + (level - 1);
+        return killsNeeded * XP_PER_KILL;
     }
 
     public void update(float delta) {
@@ -59,16 +86,33 @@ public class GameState {
     }
 
     public void addXP(int xp) {
-        currentXP += xp;
+        currentXP += (int)(xp * xpBonusModifier);
     }
 
     public boolean shouldLevelUp() {
-        return currentXP >= Constants.XP_PER_LEVEL;
+        return currentXP >= xpForNextLevel;
     }
 
     public void levelUp() {
-        currentXP -= Constants.XP_PER_LEVEL;
+        currentXP -= xpForNextLevel;
         playerLevel++;
+        xpForNextLevel = calculateXpForLevel(playerLevel);
+    }
+
+    public void setXpBonusModifier(float modifier) {
+        this.xpBonusModifier = modifier;
+    }
+
+    public void addXpBonusModifier(float amount) {
+        this.xpBonusModifier += amount;
+    }
+
+    public long getGameSeed() {
+        return gameSeed;
+    }
+
+    public int getXpForNextLevel() {
+        return xpForNextLevel;
     }
 
     public void addMoney(int amount) {
@@ -147,6 +191,6 @@ public class GameState {
     }
 
     public float getXPProgress() {
-        return (float) currentXP / Constants.XP_PER_LEVEL;
+        return (float) currentXP / xpForNextLevel;
     }
 }
